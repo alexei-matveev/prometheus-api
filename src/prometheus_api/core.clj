@@ -40,7 +40,14 @@
 ;; GET /api/v1/status/config
 ;; GET /api/v1/status/flags
 
-;; See (comment ...) below for usage examples:
+;;
+;; Make matric  selector in Prometheus  syntax [1]. See  (comment ...)
+;; below  for   usage  examples.   Beware  that   empty  stem/name  is
+;; allowed. Labels may  be repeated too. Still not  general enough for
+;; !=, =~, and !~ operators ...
+;;
+;; [1] https://prometheus.io/docs/prometheus/latest/querying/basics/
+;;
 (defn- make-selector
   ([obj]
    (let [stem (:__name__ obj)
@@ -56,8 +63,13 @@
 
 ;; For your C-x C-e pleasure:
 (comment
+  ;; Basic usage:
   (make-selector "stem" {:label "some value"})
   => "stem{label=\"some value\"}"
+  ;; Empty stem and/or repeated labels:
+  (make-selector "" [[:job "a"] [:job "b"]])
+  => "{job=\"a\",job=\"b\"}"
+  ;; JSON objects as returned by Prometheus API:
   (make-selector {:__name__ "stem",
                   :instance "localhost:9090",
                   :job "job",
