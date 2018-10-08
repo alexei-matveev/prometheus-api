@@ -39,19 +39,33 @@
 ;; GET /api/v1/status/config
 ;; GET /api/v1/status/flags
 
-(defn- make-selector [obj]
-  (let [stem (:__name__ obj)
-        labels (dissoc obj :__name__)]
-    (str stem
-         "{"
-         (cs/join ","
-                  (for [[k v] labels]
-                    (str (name k) "=" (pr-str v))))
-         "}")))
+(defn- make-selector
+  ([obj]
+   (let [stem (:__name__ obj)
+         labels (dissoc obj :__name__)]
+     (make-selector stem labels)))
+  ([stem labels]
+   (str stem
+        "{"
+        (cs/join ","
+                 (for [[k v] labels]
+                   (str (name k) "=" (pr-str v))))
+        "}")))
+
+;; For yor C-x C-e pleasure:
+(comment
+  (make-selector "stem" {:label "some value"})
+  => "stem{label=\"some value\"}"
+  (make-selector {:__name__ "stem",
+                  :instance "localhost:9090",
+                  :job "job",
+                  :quantile "1"})
+  => "stem{instance=\"localhost:9090\",job=\"job\",quantile=\"1\"}")
 
 (defn -main [& args]
   (let [url "http://localhost:9090"]
     (pp/pprint
+     ;; An array for "match" query means to match any, not all:
      (let [ms (series url {:match ["go_gc_duration_seconds" "up"]})]
        (for [m ms :let [s (make-selector m)]]
          (query url {:query s}))))))
