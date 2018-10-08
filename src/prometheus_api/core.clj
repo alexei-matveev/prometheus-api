@@ -6,6 +6,7 @@
 (ns prometheus-api.core
   (:require
    [clj-http.client :as http]
+   [yaml.core :as yaml]
    [clojure.string :as cs]
    [clojure.pprint :as pp])
   (:gen-class))
@@ -52,13 +53,25 @@
   (label-values "http://localhost:9090" "job")
   => ["prometheus"])
 
+;; GET /api/v1/status/config
+(defn- status-config [base-url]
+  (let [url (str base-url "/api/v1/status/config")]
+    (let [config (exec url {})]
+      (yaml/parse-string (:yaml config)))))
+
+(comment
+  ;; Ordered map is displayed as an ordinary map in Cider repl:
+  (status-config "http://localhost:9090")
+  => #ordered/map ([:global #ordered/map ([:scrape_interval "15s"] ...)]
+                   [:alerting ...]
+                   [:scrape_configs ...]))
+
 ;; GET /api/v1/query_range
 ;; GET /api/v1/targets
 ;; GET /api/v1/rules
 ;; GET /api/v1/alerts
 ;; GET /api/v1/targets/metadata
 ;; GET /api/v1/alertmanagers
-;; GET /api/v1/status/config
 ;; GET /api/v1/status/flags
 
 ;;
