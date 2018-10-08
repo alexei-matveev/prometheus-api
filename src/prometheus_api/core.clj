@@ -25,10 +25,23 @@
   (let [url (str base-url "/api/v1/series")]
     (exec url query-params)))
 
+(comment
+  (series "http://localhost:9090" {:match ["up"]})
+  => [{:__name__ "up", :instance "localhost:9090", :job "prometheus"}])
+
 ;; GET /api/v1/query
 (defn- query [base-url query-params]
   (let [url (str base-url "/api/v1/query")]
     (exec url query-params)))
+
+(comment
+  (query "http://localhost:9090" {:query "up"})
+  =>
+  {:resultType "vector",
+   :result [{:metric {:__name__ "up",
+                      :instance "localhost:9090",
+                      :job "prometheus"},
+             :value [1.539026754038E9 "1"]}]})
 
 ;; GET /api/v1/label/<label_name>/values
 (defn- label-values [base-url label-name]
