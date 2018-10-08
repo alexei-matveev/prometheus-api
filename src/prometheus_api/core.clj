@@ -3,9 +3,9 @@
 
 (defn- exec [url opts]
   (let [resp (http/get url opts)]
-    (:body resp)))
+    ;; Check for :status = "error" or just for :error in the body:
+    (-> resp :body :data)))
 
-;; Error checking?
 (defn- series [base-url query-params]
   (let [url (str base-url "/api/v1/series")
         opts {:query-params query-params
