@@ -1,24 +1,26 @@
 (ns prometheus-api.core
   (:require [clj-http.client :as http]))
 
+(defn- exec [url opts]
+  (let [resp (http/get url opts)]
+    (:body resp)))
+
 ;; Error checking?
 (defn- series [base-url query-params]
   (let [url (str base-url "/api/v1/series")
-        resp (http/get url
-                       {:query-params query-params
-                        :multi-param-style :array
-                        :as :json
-                        :debug? false})]
-    (:body resp)))
+        opts {:query-params query-params
+              :multi-param-style :array
+              :as :json
+              :debug? false}]
+    (exec url opts)))
 
 (defn- query [base-url query-params]
   (let [url (str base-url "/api/v1/query")
-        resp (http/get url
-                       {:query-params query-params
-                        :multi-param-style :array
-                        :as :json
-                        :debug? false})]
-    (:body resp)))
+        opts {:query-params query-params
+              :multi-param-style :array
+              :as :json
+              :debug? false}]
+    (exec url opts)))
 
 (defn -main
   [& args]
