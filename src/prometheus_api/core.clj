@@ -30,8 +30,16 @@
   (let [url (str base-url "/api/v1/query")]
     (exec url query-params)))
 
-;; GET /api/v1/query_range
 ;; GET /api/v1/label/<label_name>/values
+(defn- label-values [base-url label-name]
+  (let [url (str base-url "/api/v1/label/" label-name "/values")]
+    (exec url {})))
+
+(comment
+  (label-values "http://localhost:9090" "job")
+  => ["prometheus"])
+
+;; GET /api/v1/query_range
 ;; GET /api/v1/targets
 ;; GET /api/v1/rules
 ;; GET /api/v1/alerts
@@ -41,10 +49,11 @@
 ;; GET /api/v1/status/flags
 
 ;;
-;; Make matric  selector in Prometheus  syntax [1]. See  (comment ...)
+;; Make metric  selector in Prometheus  syntax [1]. See  (comment ...)
 ;; below  for   usage  examples.   Beware  that   empty  stem/name  is
 ;; allowed. Labels may  be repeated too. Still not  general enough for
-;; !=, =~, and !~ operators ...
+;; !=,  =~,  and  !~  operators.  Although  no  range  selectors  with
+;; suffixes as "[5m]" possible here.
 ;;
 ;; [1] https://prometheus.io/docs/prometheus/latest/querying/basics/
 ;;
@@ -82,4 +91,4 @@
      ;; An array for "match" query means to match any, not all:
      (let [ms (series url {:match ["go_gc_duration_seconds" "up"]})]
        (for [m ms :let [s (make-selector m)]]
-         (query url {:query s}))))))
+         (query url {:query (str s "[5m]")}))))))
