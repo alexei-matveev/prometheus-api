@@ -57,14 +57,17 @@
 (defn- status-config [base-url]
   (let [url (str base-url "/api/v1/status/config")]
     (let [config (exec url {})]
-      (yaml/parse-string (:yaml config)))))
+      ;; Parse yaml, Prometheus returns text:
+      (update config :yaml yaml/parse-string))))
 
 (comment
-  ;; Ordered map is displayed as an ordinary map in Cider repl:
+  ;; Ordered map is displayed as an ordinary map in Cider repl. C-x
+  ;; C-e displays it like this:
   (status-config "http://localhost:9090")
-  => #ordered/map ([:global #ordered/map ([:scrape_interval "15s"] ...)]
-                   [:alerting ...]
-                   [:scrape_configs ...]))
+  => {:yaml
+      #ordered/map ([:global #ordered/map ([:scrape_interval "15s"] ...)]
+                    [:alerting ...]
+                    [:scrape_configs ...])})
 
 ;; GET /api/v1/query_range
 ;; GET /api/v1/targets
