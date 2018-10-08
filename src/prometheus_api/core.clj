@@ -1,6 +1,7 @@
-(ns prometheus-api.core)
+(ns prometheus-api.core
+  (:require [clj-http.client :as http]))
 
-(defn foo
-  "I don't do a whole lot."
-  [x]
-  (println x "Hello, World!"))
+(defn -main
+  [& args]
+  (let [resp (http/get "http://localhost:9090/api/v1/series?match[]=up")]
+    (println (:body resp))))
