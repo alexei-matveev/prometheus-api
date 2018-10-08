@@ -50,11 +50,8 @@
          "}")))
 
 (defn -main [& args]
-  (let [url "http://localhost:9090"
-        res {:series (series url {:match ["up"]})
-             :query (query url {:query "up"})}]
-    (pp/pprint res)
+  (let [url "http://localhost:9090"]
     (pp/pprint
-     (let [ms (series url {:match ["go_gc_duration_seconds"]})]
-       (for [m ms]
-         (make-selector m))))))
+     (let [ms (series url {:match ["go_gc_duration_seconds" "up"]})]
+       (for [m ms :let [s (make-selector m)]]
+         (query url {:query s}))))))
