@@ -44,10 +44,9 @@
         labels (dissoc obj :__name__)]
     (str stem
          "{"
-         (apply str
-                (cs/join ","
-                         (for [[k v] labels]
-                           (str (name k) "=" (pr-str v)))))
+         (cs/join ","
+                  (for [[k v] labels]
+                    (str (name k) "=" (pr-str v))))
          "}")))
 
 (defn -main [& args]
