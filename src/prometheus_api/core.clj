@@ -7,7 +7,8 @@
   (:require
    [clj-http.client :as http]
    [clojure.string :as cs]
-   [clojure.pprint :as pp]))
+   [clojure.pprint :as pp])
+  (:gen-class))
 
 (defn- exec [url query-params]
   (let [opts {:query-params query-params
@@ -15,8 +16,8 @@
               :as :json
               :debug? false}
         resp (http/get url opts)]
-    ;; Check for :status = "error" look for :error in the body. Data
-    ;; may be still present even if the error occured:
+    ;; Check for :status = "error" or look for :error in the
+    ;; body. Data may be still present even if an error occured:
     (-> resp :body :data)))
 
 ;; GET /api/v1/series
@@ -39,6 +40,7 @@
 ;; GET /api/v1/status/config
 ;; GET /api/v1/status/flags
 
+;; See (comment ...) below for usage examples:
 (defn- make-selector
   ([obj]
    (let [stem (:__name__ obj)
@@ -52,7 +54,7 @@
                    (str (name k) "=" (pr-str v))))
         "}")))
 
-;; For yor C-x C-e pleasure:
+;; For your C-x C-e pleasure:
 (comment
   (make-selector "stem" {:label "some value"})
   => "stem{label=\"some value\"}"
