@@ -1,7 +1,10 @@
 ;;;
-;;; Prometheus HTTP API [1]
+;;; Prometheus HTTP API [1]. Docker Starten wie in Doku [2]:
+;;;
+;;;     docker run --name prometheus -p 9090:9090 prom/prometheus:v2.4.3
 ;;;
 ;;; [1] https://prometheus.io/docs/prometheus/latest/querying/api/
+;;; [2] https://prometheus.io/docs/prometheus/latest/installation/
 ;;;
 (ns prometheus-api.core
   (:require
@@ -64,10 +67,11 @@
   ;; Ordered map is displayed as an ordinary map in Cider repl. C-x
   ;; C-e displays it like this:
   (status-config "http://localhost:9090")
-  => {:yaml
-      #ordered/map ([:global #ordered/map ([:scrape_interval "15s"] ...)]
-                    [:alerting ...]
-                    [:scrape_configs ...])})
+  =>
+  {:yaml
+   {:global {:scrape_interval "15s", .. ..},
+    :alerting {.. ..},
+    :scrape_configs [...]}})
 
 ;; GET /api/v1/query_range
 ;; GET /api/v1/targets
