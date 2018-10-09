@@ -64,8 +64,8 @@
       (update config :yaml yaml/parse-string))))
 
 (comment
-  ;; Ordered map is displayed as an ordinary map in Cider repl. C-x
-  ;; C-e displays it like this:
+  ;; Ordered map  is displayed as  an ordinary  map in Cider  repl and
+  ;; differently for C-x C-e. Hiere the the traditional form:
   (status-config "http://localhost:9090")
   =>
   {:yaml
