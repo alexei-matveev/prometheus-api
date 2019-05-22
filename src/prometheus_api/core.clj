@@ -26,14 +26,16 @@
     ;; body. Data may be still present even if an error occured:
     (-> resp :body :data)))
 
-;; GET /api/v1/series
+;; GET /api/v1/series --- get descriptors for the matching time series
+;; ...
 (defn- series [base-url query-params]
   (let [url (str base-url "/api/v1/series")]
     (exec url query-params)))
 
 (comment
   (series "http://localhost:9090" {:match ["up"]})
-  => [{:__name__ "up", :instance "localhost:9090", :job "prometheus"}])
+  =>
+  [{:__name__ "up", :instance "localhost:9090", :job "prometheus"}])
 
 ;; GET /api/v1/query
 (defn- query [base-url query-params]
@@ -94,9 +96,8 @@
 ;;
 (defn- make-selector
   ([obj]
-   (let [stem (:__name__ obj)
-         labels (dissoc obj :__name__)]
-     (make-selector stem labels)))
+   ;; {__name_="http_requests_total",...} is a valid metric selector:
+   (make-selector "" obj))
   ([stem labels]
    (str stem
         "{"
@@ -107,9 +108,12 @@
 
 ;; For your C-x C-e pleasure:
 (comment
-  ;; Basic usage:
-  (make-selector "stem" {:label "some value"})
-  => "stem{label=\"some value\"}"
+  ;; See query examples
+  ;; https://prometheus.io/docs/prometheus/latest/querying/examples/
+  (make-selector "http_requests_total" {})
+  => "http_requests_total{}"
+  (make-selector "http_requests_total" {:job "apiserver", :handler "/api/comments"})
+  => "http_requests_total{job=\"apiserver\",handler=\"/api/comments\"}"
   ;; Empty stem and/or repeated labels:
   (make-selector "" [[:job "a"] [:job "b"]])
   => "{job=\"a\",job=\"b\"}"
@@ -118,7 +122,8 @@
                   :instance "localhost:9090",
                   :job "job",
                   :quantile "1"})
-  => "stem{instance=\"localhost:9090\",job=\"job\",quantile=\"1\"}")
+  =>
+  "{__name__=\"stem\",instance=\"localhost:9090\",job=\"job\",quantile=\"1\"}")
 
 (defn -main [& args]
   (let [url "http://localhost:9090"]
