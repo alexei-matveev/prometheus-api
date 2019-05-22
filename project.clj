@@ -6,6 +6,8 @@
   :dependencies [[org.clojure/clojure "1.8.0"]
                  [clj-http "3.9.1"]
                  [cheshire "5.8.1"]
-                 [io.forward/yaml "1.0.9"]]
+                 ;; This one needs a new build for JDK 11:
+                 ;; [io.forward/yaml "1.0.9"]
+                 [f0bec0d/yaml "1.0.9"]]
   :profiles {:uberjar {:aot :all}}
   :main prometheus-api.core)
