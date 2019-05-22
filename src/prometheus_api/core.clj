@@ -1,7 +1,8 @@
 ;;;
-;;; Prometheus HTTP API [1]. Docker Starten wie in Doku [2]:
+;;; Prometheus HTTP API [1]. To start a Prometheus server with docker
+;;; issue this command [2]:
 ;;;
-;;;     docker run --name prometheus -p 9090:9090 prom/prometheus:v2.4.3
+;;;     docker run --name prometheus -p 9090:9090 prom/prometheus:v2.9.2
 ;;;
 ;;; [1] https://prometheus.io/docs/prometheus/latest/querying/api/
 ;;; [2] https://prometheus.io/docs/prometheus/latest/installation/
@@ -14,6 +15,7 @@
    [clojure.pprint :as pp])
   (:gen-class))
 
+;; Execute API call:
 (defn- exec [url query-params]
   (let [opts {:query-params query-params
               :multi-param-style :array
