@@ -94,36 +94,32 @@
 ;;
 ;; [1] https://prometheus.io/docs/prometheus/latest/querying/basics/
 ;;
-(defn- make-selector
-  ([obj]
-   ;; {__name_="http_requests_total",...} is a valid metric selector:
-   (make-selector "" obj))
-  ([stem labels]
-   (str stem
-        "{"
-        (cs/join ","
-                 (for [[k v] labels]
-                   (str (name k) "=" (pr-str v))))
-        "}")))
+(defn- make-selector [obj]
+  ;; {__name_="http_requests_total",...} is a valid metric selector:
+  (if (string? obj)
+    (make-selector {:__name__ obj})
+    (str "{"
+         (cs/join ","
+                  (for [[k v] obj]
+                    (str (name k) "=" (pr-str v))))
+         "}")))
 
 ;; For your C-x C-e pleasure:
 (comment
   ;; See query examples
   ;; https://prometheus.io/docs/prometheus/latest/querying/examples/
-  (make-selector "http_requests_total" {})
-  => "http_requests_total{}"
-  (make-selector "http_requests_total" {:job "apiserver", :handler "/api/comments"})
-  => "http_requests_total{job=\"apiserver\",handler=\"/api/comments\"}"
-  ;; Empty stem and/or repeated labels:
-  (make-selector "" [[:job "a"] [:job "b"]])
-  => "{job=\"a\",job=\"b\"}"
+  (make-selector "http_requests_total")
+  => "{__name__=\"http_requests_total\"}"
   ;; JSON objects as returned by Prometheus API:
   (make-selector {:__name__ "stem",
                   :instance "localhost:9090",
                   :job "job",
                   :quantile "1"})
-  =>
-  "{__name__=\"stem\",instance=\"localhost:9090\",job=\"job\",quantile=\"1\"}")
+  => "{__name__=\"stem\",instance=\"localhost:9090\",job=\"job\",quantile=\"1\"}"
+  ;; No name and/or repeated labels:
+  (make-selector [[:job "a"] [:job "b"]])
+  => "{job=\"a\",job=\"b\"}"
+)
 
 (defn -main [& args]
   (let [url "http://localhost:9090"]
